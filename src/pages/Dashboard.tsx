@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getShopifyAuth, clearShopifyAuth, isTokenValid } from "@/services/shopifyAuth";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 import StoreCard from "@/components/StoreCard";
 
 const Dashboard = () => {

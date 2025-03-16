@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { exchangeCodeForToken, saveShopifyAuth } from "@/services/shopifyAuth";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 import ShopifyLogo from "@/components/ShopifyLogo";
 
 const AuthCallback = () => {

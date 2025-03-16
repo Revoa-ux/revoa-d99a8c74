@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ShopifyFormInput from "@/components/ShopifyFormInput";
@@ -7,7 +6,7 @@ import ShopifyLogo from "@/components/ShopifyLogo";
 import GlassCard from "@/components/GlassCard";
 import StoreCard from "@/components/StoreCard";
 import { generateAuthUrl, getShopifyAuth, clearShopifyAuth, isTokenValid } from "@/services/shopifyAuth";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [shopUrl, setShopUrl] = useState("");
