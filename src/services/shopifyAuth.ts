@@ -62,6 +62,7 @@ export const generateAuthUrl = (shop: string): string => {
   }
   
   console.log(`Generating auth URL for shop: ${shopUrl}`);
+  console.log(`Using redirect URI: ${SHOPIFY_CONFIG.REDIRECT_URI}`);
   
   // Build the authorization URL with the correctly formatted shop URL
   const params = new URLSearchParams({
