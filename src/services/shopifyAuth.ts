@@ -53,7 +53,17 @@ export const generateAuthUrl = (shop: string): string => {
     shopUrl = `${shopUrl}.myshopify.com`;
   }
   
-  // Build the authorization URL
+  // Ensure we don't have any trailing slashes that could cause issues
+  shopUrl = shopUrl.replace(/\/+$/, "");
+  
+  // Validate the shopUrl format before proceeding
+  if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(shopUrl)) {
+    throw new Error("Invalid Shopify store URL format. Expected format: yourstore.myshopify.com");
+  }
+  
+  console.log(`Generating auth URL for shop: ${shopUrl}`);
+  
+  // Build the authorization URL with the correctly formatted shop URL
   const params = new URLSearchParams({
     client_id: SHOPIFY_CONFIG.CLIENT_ID,
     scope: SHOPIFY_CONFIG.SCOPES,
@@ -62,7 +72,9 @@ export const generateAuthUrl = (shop: string): string => {
     shop: shopUrl,
   });
   
-  return `https://${shopUrl}/admin/oauth/authorize?${params.toString()}`;
+  const authUrl = `https://${shopUrl}/admin/oauth/authorize?${params.toString()}`;
+  console.log(`Auth URL: ${authUrl}`);
+  return authUrl;
 };
 
 // Generate a random state value for CSRF protection
@@ -76,14 +88,24 @@ export const exchangeCodeForToken = async (
   code: string, 
   shop: string
 ): Promise<{ accessToken: string; scope: string }> => {
-  let url = `https://${shop}/admin/oauth/access_token`;
+  if (!shop) throw new Error("Shop parameter is required");
+  
+  // Normalize and validate the shop URL
+  let shopUrl = shop.trim().toLowerCase();
+  shopUrl = shopUrl.replace(/^https?:\/\//, "");
+  shopUrl = shopUrl.replace(/\/+$/, "");
+  
+  let url = `https://${shopUrl}/admin/oauth/access_token`;
   
   // If in development, use the proxy
   if (API_PROXY_URL) {
     url = `${API_PROXY_URL}/access_token`;
+    console.log(`Using proxy URL for token exchange: ${url}`);
   }
   
   try {
+    console.log(`Exchanging code for token with shop: ${shopUrl}`);
+    
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -93,16 +115,19 @@ export const exchangeCodeForToken = async (
         client_id: SHOPIFY_CONFIG.CLIENT_ID,
         client_secret: SHOPIFY_CONFIG.CLIENT_SECRET,
         code,
-        shop: shop,
+        shop: shopUrl,
       }),
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Failed to exchange code: ${errorData.error_description || response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error_description || response.statusText || "Unknown error";
+      console.error(`Token exchange failed: ${errorMessage}`);
+      throw new Error(`Failed to exchange code: ${errorMessage}`);
     }
     
     const data = await response.json();
+    console.log("Token exchange successful");
     return {
       accessToken: data.access_token,
       scope: data.scope,

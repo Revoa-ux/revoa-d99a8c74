@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ShopifyFormInput from "@/components/ShopifyFormInput";
@@ -44,16 +45,28 @@ const Index = () => {
     try {
       setIsLoading(true);
       
-      // Generate and redirect to Shopify OAuth URL
+      // Add some helper messages to guide the user in troubleshooting
+      console.log(`Attempting to connect to Shopify store: ${shopUrl}`);
+      
+      // Generate the Shopify OAuth URL
       const authUrl = generateAuthUrl(shopUrl);
       
       // In a real app, you might want to save the shop URL to session storage
       // to retrieve it later in the callback
       sessionStorage.setItem("shop_url", shopUrl);
       
-      // Redirect to Shopify for authorization
-      window.location.href = authUrl;
+      // Show notification before redirecting
+      toast.info("Redirecting to Shopify authorization page...");
+      console.log(`Redirecting to: ${authUrl}`);
+      
+      // Small delay before redirect to ensure the toast is visible
+      setTimeout(() => {
+        // Redirect to Shopify for authorization
+        window.location.href = authUrl;
+      }, 500);
+      
     } catch (err) {
+      console.error("Failed to generate Shopify auth URL:", err);
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to Shopify";
       setError(errorMessage);
       toast.error(errorMessage);
