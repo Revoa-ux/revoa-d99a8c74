@@ -169,7 +169,7 @@ function toast({ ...props }: Toast) {
   }
 }
 
-// Add variant methods for success and error
+// Add variant methods for success, error, and info
 toast.success = (title: string, options: Omit<Toast, "title" | "variant"> = {}) => {
   return toast({
     title,
@@ -183,6 +183,15 @@ toast.error = (title: string, options: Omit<Toast, "title" | "variant"> = {}) =>
   return toast({
     title,
     variant: "destructive",
+    ...options,
+  })
+}
+
+toast.info = (title: string, options: Omit<Toast, "title" | "variant"> = {}) => {
+  return toast({
+    title,
+    variant: "default",
+    className: "bg-blue-500 border-blue-600 text-white",
     ...options,
   })
 }
